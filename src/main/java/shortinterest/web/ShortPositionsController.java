@@ -1,5 +1,6 @@
 package shortinterest.web;
 
+import com.google.common.collect.Multimap;
 import shortinterest.scraper.FcaSpreadsheetScraper;
 import shortinterest.scraper.ShortPosition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class ShortPositionsController {
     private FcaSpreadsheetScraper fcaSpreadsheetScraper;
 
     @RequestMapping(value = "/shortpositions", method = RequestMethod.GET)
-    public List<ShortPosition> shortPositions() {
+    public Multimap<String, ShortPosition> shortPositions() {
         try {
             return fcaSpreadsheetScraper.getShortPositions(new URL("http://www.fca.org.uk/static/documents/short-positions-daily-update.xls"), 0);
         } catch (MalformedURLException e) {

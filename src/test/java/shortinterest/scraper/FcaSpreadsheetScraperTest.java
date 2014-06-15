@@ -1,5 +1,6 @@
 package shortinterest.scraper;
 
+import com.google.common.collect.Multimap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,14 +26,15 @@ public class FcaSpreadsheetScraperTest {
         URL spreadsheetUrl = Thread.currentThread().getContextClassLoader().getResource("short-positions-daily-update.xls");
 
         // When
-        List<ShortPosition> shortPositions = fcaSpreadsheetScraper.getShortPositions(spreadsheetUrl, 0);
+        Multimap<String, ShortPosition> shortPositions = fcaSpreadsheetScraper.getShortPositions(spreadsheetUrl, 0);
 
         // Then
         assertThat(shortPositions.size(), is(2));
-        assertThat(shortPositions.get(0).getHolder(), is("Henderson Alternative Investment Advisor Limited"));
-        assertThat(shortPositions.get(0).getIssuer(), is("1SPATIAL PLC"));
-        assertThat(shortPositions.get(0).getIsin(), is("GB00B09LQS34"));
-        assertThat(shortPositions.get(0).getNetShortPosition(), is(1.42));
-        assertThat(shortPositions.get(0).getPositionDate(), is(LocalDate.parse("2013-05-29", DateTimeFormatter.ISO_LOCAL_DATE)));
+        ShortPosition shortPosition = shortPositions.get("GB00B09LQS34").iterator().next();
+        assertThat(shortPosition.getHolder(), is("Henderson Alternative Investment Advisor Limited"));
+        assertThat(shortPosition.getIssuer(), is("1SPATIAL PLC"));
+        assertThat(shortPosition.getIsin(), is("GB00B09LQS34"));
+        assertThat(shortPosition.getNetShortPosition(), is(1.42));
+        assertThat(shortPosition.getPositionDate(), is(LocalDate.parse("2013-05-29", DateTimeFormatter.ISO_LOCAL_DATE)));
     }
 }
