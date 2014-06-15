@@ -1,13 +1,24 @@
 package shortinterest.service;
 
-import shortinterest.scraper.FcaSpreadsheetScraper;
+import com.google.common.collect.Multimap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import shortinterest.domain.Company;
+import shortinterest.scraper.FcaSpreadsheetScraper;
+import shortinterest.scraper.ShortPosition;
 
 import java.net.URL;
+import java.util.Map;
 
 @Service
 public class UkMarketService {
+
+    Logger logger = LoggerFactory.getLogger(UkMarketService.class);
+
+    public static final int LIVE_POSITIONS_PAGE = 0;
+    public static final int HISTORICAL_POSITIONS_PAGE = 0;
 
     @Autowired
     private CompanyRepository companyRepository;
@@ -16,7 +27,21 @@ public class UkMarketService {
     private FcaSpreadsheetScraper fcaSpreadsheetScraper;
 
     public void updateShortPositions(URL shortPositionsUrl) {
-        fcaSpreadsheetScraper.getShortPositions(shortPositionsUrl, 0);
+        Multimap<String, ShortPosition> liveShortPositions = fcaSpreadsheetScraper.getShortPositions(shortPositionsUrl, LIVE_POSITIONS_PAGE);
+        for (Map.Entry<String, ShortPosition> entry : liveShortPositions.entries()) {
+            Company company = companyRepository.findOne(entry.getKey());
+            ShortPosition shortPosition = entry.getValue();
+            if (null == company) {
+                company = new Company(entry.getKey(), shortPosition.getIssuer());
+            }
+
+            shortinterest.domain.ShortPosition daoShortPosition = new shortinterest.domain.ShortPosition(shortPosition.getIsin(), shortPosition.getHolder(), shortPosition.getNetShortPosition());
+
+            company.addShortPosition(daoShortPosition);
+
+            logger.info(company.toString());
+            companyRepository.save(company);
+        }
     }
 
 }

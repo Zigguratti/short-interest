@@ -2,7 +2,7 @@ var shortinterestControllers = angular.module('shortinterestControllers', []);
 
 shortinterestApp.controller('CompanyListCtrl',
     function ($scope, $http) {
-        $http.get('feed/companies').success(function(data) {
+        $http.get('feed/companies?size=200').success(function(data) {
             $scope.companies = data._embedded.companies;
         })
     }

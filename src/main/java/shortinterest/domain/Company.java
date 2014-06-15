@@ -1,9 +1,12 @@
 package shortinterest.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import com.google.common.base.Objects;
+
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 @Entity
 public class Company implements Serializable {
@@ -11,70 +14,42 @@ public class Company implements Serializable {
     @Id
     private String ticker;
     private String name;
-    private Integer sectorCode;
-    private Integer subSectorCode;
-    private Double freeFloat;
-    private Double marketCap;
 
-    //Results
-    private Date nextResultsDate;
-    private Integer daysToResults;
-
-    //  Short interest quantities
-    private Double shortInterestFFPct; // short interest as % of free float
-    private Double shortInterest;
-
-    // Short-interest trend.  Ideally want to model curve and predict trend http://davetang.org/muse/2013/05/09/on-curve-fitting/
-    private Double m1_SITrend;
-    private Double m2SITrend;
-    private Double m3SITrend;
-    private Double m6SITrend;
-    private Double m12SITrend;
-
-    //  Historical Volatility
-    private Double m1Volatility;
-    private Double m2Volatility;
-    private Double m3Volatility;
-    private Double m6Volatility;
-    private Double m12Volatility;
-
-    //  Volatility trends.  Ideally want to model vol curve and predict trend http://davetang.org/muse/2013/05/09/on-curve-fitting/
-    private Double m1VolTrend;
-    private Double m2VolTrend;
-    private Double m3VolTrend;
-    private Double m6VolTrend;
-    private Double m12VolTrend;
-
-    //  Valuation
-    private Double Valuation; // possibly more than one field here ... tbc.  May not add ... not in v 1
-
-    // TTM quantitities.  These need calculating: TTM = last quarters plus expected next quarter(s) to estimate FY.  I suggest we grow previous quarters using growth-rate if estimates NA.
-    private Double TTMRevenues;
-    private Double TTMEBITDA;
-    private Double TTMNetIncome;
-    private Double TTMEps;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<ShortPosition> shortPositions;
 
     private Company() {
     }
 
-    // Can scrape this from reuters.com or 4traders.com.
-    public Company(String ticker, String name, Integer sectorCode, Integer subSectorCode, Double freeFloat, Double marketCap) {
+    public Company(String ticker, String name) {
+        shortPositions = newHashSet();
         this.ticker = ticker;
         this.name = name;
-        this.sectorCode = sectorCode;
-        this.subSectorCode = subSectorCode;
-        this.freeFloat = freeFloat;
-        this.marketCap = marketCap;
     }
 
-    // May have to do this manually; want to alert whenever there is a new ticker (a new short-position).
     public String getTicker() {
         return ticker;
     }
 
-    // Once have Ric or Isin we can scrape this.
     public String getName() {
         return name;
+    }
+
+    public void addShortPosition(ShortPosition shortPosition) {
+        shortPositions.add(shortPosition);
+    }
+
+    public Set<ShortPosition> getShortPositions() {
+        return shortPositions;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(Company.class)
+                .add("ticker", ticker)
+                .add("name", name)
+                .add("shortPositions", shortPositions)
+                .toString();
     }
 }
 

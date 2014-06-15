@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import shortinterest.service.UkMarketService;
 
+import java.net.URL;
 import java.util.Arrays;
 
 @Configuration
@@ -17,13 +19,8 @@ public class Application {
 
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class);
-        CompanyRepository repository = context.getBean(CompanyRepository.class);
-        repository.save(Arrays.asList(
-                new Company("HPQ", "Hewlett-Packard", 123, 154, 0.20, 1245.2),
-                new Company("IBM", "IBM", 123, 154, 0.20, 1245.2),
-                new Company("MSFT", "Microsoft", 123, 154, 0.20, 1245.2)
-        ));
-
+        UkMarketService ukMarketService = context.getBean(UkMarketService.class);
+        ukMarketService.updateShortPositions(new URL("http://www.fca.org.uk/static/documents/short-positions-daily-update.xls"));
     }
 
 }
