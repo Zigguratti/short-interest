@@ -49,7 +49,7 @@ public class FcaSpreadsheetScraper {
             );
         }
 
-        return Multimaps.index(shortPositions, shortPosition -> shortPosition.getIsin());
+        return Multimaps.index(shortPositions, ShortPosition::getIsin);
     }
 
     private void discardHeaderRow(Iterator<Row> rowIterator) {
