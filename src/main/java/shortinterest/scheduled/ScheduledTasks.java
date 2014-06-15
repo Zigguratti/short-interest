@@ -15,10 +15,7 @@ public class ScheduledTasks {
     @Autowired
     private CompanyRepository companyRepository;
 
-
-    private SecureRandom random = new SecureRandom();
-
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 15000)
     public void addRandomCompany() {
         System.out.println("Hello world");
     }
