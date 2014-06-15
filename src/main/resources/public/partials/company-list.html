@@ -1,0 +1,10 @@
+<div>
+    <input ng-model="query">
+</div>
+<div>
+    <ul>
+        <li ng-repeat="company in companies | filter:query">
+            <span><a href="#/companies/{{company.ticker}}">{{company.name}}</a></span>
+        </li>
+    </ul>
+</div>
