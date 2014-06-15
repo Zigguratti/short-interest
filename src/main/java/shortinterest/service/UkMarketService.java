@@ -24,6 +24,9 @@ public class UkMarketService {
     private CompanyRepository companyRepository;
 
     @Autowired
+    private ShortPositionRepository shortPositionRepository;
+
+    @Autowired
     private FcaSpreadsheetScraper fcaSpreadsheetScraper;
 
     public void updateShortPositions(URL shortPositionsUrl) {
@@ -32,15 +35,12 @@ public class UkMarketService {
             Company company = companyRepository.findOne(entry.getKey());
             ShortPosition shortPosition = entry.getValue();
             if (null == company) {
-                company = new Company(entry.getKey(), shortPosition.getIssuer());
+                company = new Company(shortPosition.getIsin(), shortPosition.getIssuer());
+                companyRepository.save(company);
             }
 
-            shortinterest.domain.ShortPosition daoShortPosition = new shortinterest.domain.ShortPosition(shortPosition.getIsin(), shortPosition.getHolder(), shortPosition.getNetShortPosition());
-
-            company.addShortPosition(daoShortPosition);
-
-            logger.info(company.toString());
-            companyRepository.save(company);
+            shortinterest.domain.ShortPosition daoShortPosition = new shortinterest.domain.ShortPosition(company, shortPosition.getHolder(), shortPosition.getNetShortPosition());
+            shortPositionRepository.save(daoShortPosition);
         }
     }
 

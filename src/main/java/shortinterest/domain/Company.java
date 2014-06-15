@@ -2,7 +2,10 @@ package shortinterest.domain;
 
 import com.google.common.base.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -15,7 +18,7 @@ public class Company implements Serializable {
     private String ticker;
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
     private Set<ShortPosition> shortPositions;
 
     private Company() {
